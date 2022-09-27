@@ -1,5 +1,8 @@
 <?php
 
+
+
+use App\Http\Controllers\GoogleSheetsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,3 +19,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('googlesheet', [GoogleSheetsController::class, 'sheetOperation']);
+Route::get('todaystat', [GoogleSheetsController::class, 'todayStat']);
