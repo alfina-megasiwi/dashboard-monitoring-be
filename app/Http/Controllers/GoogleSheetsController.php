@@ -14,7 +14,6 @@ class GoogleSheetsController extends Controller
         "General error - Branch 9995 not valid",
         "io.mib.arx.is.server.gateway.exceptions.EndpointClientExce",
         "io.mib.nio.common.exceptions.ReadResponseTimeoutException",
-        "Invalid Ip address - Branch 1498 sudah tidak aktif"
     );
 
     public function getData()
@@ -87,5 +86,4 @@ class GoogleSheetsController extends Controller
     {
         return response()->json($this->errorLog);
     }
-
 }
