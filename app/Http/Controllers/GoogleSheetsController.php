@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Google\Service\Sheets;
 use Illuminate\Http\Request;
 use App\Services\GoogleSheetsServices;
+use SebastianBergmann\LinesOfCode\Counter;
 
 class GoogleSheetsController extends Controller{
 
@@ -33,4 +34,26 @@ class GoogleSheetsController extends Controller{
 
         return json_encode($today_data_to_json);
     }
+
+    public function weeklyData(Request $request){
+        $data = $this->getData();
+        $last_week_sunday = date('d.m.Y', strtotime('last week sunday'));
+        $counter = count($data) - 1;
+
+        $this_weekly_data = array();
+
+        while ($data[$counter][0] != $last_week_sunday){
+            $weekly_data = array(
+                'data' => $data[$counter][2],
+                'date' => $data[$counter][0],
+                'time' => $data[$counter][3],
+                'error' => ($data[$counter][5] == '-' || $data[$counter][5] == '') ? 0 : strtok($data[$counter][5], " ")
+            );
+            array_unshift($this_weekly_data, $weekly_data);
+            $counter--;
+        };
+        return json_encode($this_weekly_data);
+    }
 }
+
+?>
