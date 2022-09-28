@@ -9,9 +9,17 @@ use SebastianBergmann\LinesOfCode\Counter;
 
 class GoogleSheetsController extends Controller{
 
-    public function getData(){
-        $data = (new GoogleSheetsServices ())->readSheet();
-        return $data;
+    public $errorLog = array(
+        "Nomor Rek tidak dikenal - Transaksi Valas",
+        "General error - Branch 9995 not valid",
+        "io.mib.arx.is.server.gateway.exceptions.EndpointClientExce",
+        "io.mib.nio.common.exceptions.ReadResponseTimeoutException",
+        "Invalid Ip address - Branch 1498 sudah tidak aktif"
+    );
+
+    public function getData()
+    {
+        return (new GoogleSheetsServices())->readSheet();
     }
 
     public function sheetOperation(Request $request)
@@ -23,18 +31,62 @@ class GoogleSheetsController extends Controller{
     public function todayStat(Request $request)
     {
         $data = $this->getData();
-        $today_data = $data[count($data)-1];
+        $today_data = $data[count($data) - 1];
 
         $today_data_to_json = array(
-            'totalData' => $today_data[2], 
-            'runtime' => $today_data[3], 
-            "dataRuntime" => number_format((float)$today_data[2]/$today_data[3], 2, '.', ''),
-            "totalError" => ($today_data[5]=="-") ? 0 : $today_data[5]
+            'totalData' => $today_data[1],
+            'runtime' => $today_data[2],
+            'dataRuntime' => number_format((float)$today_data[1] / $today_data[2], 2, '.', ''),
+            'totalError' => ($today_data[4] == '-' || $today_data[4] == '') ? 0 : strtok($today_data[4], " ")
         );
 
         return json_encode($today_data_to_json);
     }
 
+    public function weeklyError(Request $request)
+    {
+
+        $data = $this->getData();
+        $last_week_sunday = date('d.m.Y', strtotime('last week sunday'));
+        $counter = count($data) - 1;
+
+        $this_week_error = array();
+
+        while ($data[$counter][0] != $last_week_sunday) {
+            preg_match_all("/\((((?>[^()]+)|(?R))*)\)/", $data[$counter][4], $error);
+
+
+            $temparr = array();
+            $array_error = $error[1];
+
+            foreach ($array_error as $value){
+                array_unshift($temparr, array(
+                    'name' => $value,
+                    'isNew' => $this->isTheSame($value)? false : true
+                ));
+
+            }
+            array_unshift($this_week_error, array(
+                'date' => strtok($data[$counter][0], "."),
+                'errorName' => $temparr,
+                'solvingError' => $data[$counter][5],
+            ));
+
+            $counter--;
+        }
+
+        return json_encode($this_week_error);
+    }
+
+    public function isTheSame($text)
+    {
+        return in_array($text, $this->errorLog)? true : false;
+    }
+
+    public function errorLog(Request $request)
+    {
+        return response()->json($this->errorLog);
+    }
     public function weeklyData(Request $request){
         $data = $this->getData();
         $last_week_sunday = date('d.m.Y', strtotime('last week sunday'));
@@ -44,10 +96,10 @@ class GoogleSheetsController extends Controller{
 
         while ($data[$counter][0] != $last_week_sunday){
             $weekly_data = array(
-                'data' => $data[$counter][2],
+                'data' => $data[$counter][1],
                 'date' => $data[$counter][0],
-                'time' => $data[$counter][3],
-                'error' => ($data[$counter][5] == '-' || $data[$counter][5] == '') ? 0 : strtok($data[$counter][5], " ")
+                'time' => $data[$counter][2],
+                'error' => ($data[$counter][4] == '-' || $data[$counter][4] == '') ? 0 : strtok($data[$counter][4], " ")
             );
             array_unshift($this_weekly_data, $weekly_data);
             $counter--;
@@ -55,5 +107,3 @@ class GoogleSheetsController extends Controller{
         return json_encode($this_weekly_data);
     }
 }
-
-?>
