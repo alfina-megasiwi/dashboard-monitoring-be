@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use Google\Service\Sheets;
 use Illuminate\Http\Request;
 use App\Services\GoogleSheetsServices;
+use SebastianBergmann\LinesOfCode\Counter;
 
-class GoogleSheetsController extends Controller
-{
+class GoogleSheetsController extends Controller{
 
     public $errorLog = array(
         "Nomor Rek tidak dikenal - Transaksi Valas",
@@ -85,5 +85,24 @@ class GoogleSheetsController extends Controller
     public function errorLog(Request $request)
     {
         return response()->json($this->errorLog);
+    }
+    public function weeklyData(Request $request){
+        $data = $this->getData();
+        $last_week_sunday = date('d.m.Y', strtotime('last week sunday'));
+        $counter = count($data) - 1;
+
+        $this_weekly_data = array();
+
+        while ($data[$counter][0] != $last_week_sunday){
+            $weekly_data = array(
+                'data' => $data[$counter][1],
+                'date' => $data[$counter][0],
+                'time' => $data[$counter][2],
+                'error' => ($data[$counter][4] == '-' || $data[$counter][4] == '') ? 0 : strtok($data[$counter][4], " ")
+            );
+            array_unshift($this_weekly_data, $weekly_data);
+            $counter--;
+        };
+        return json_encode($this_weekly_data);
     }
 }
