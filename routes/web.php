@@ -22,3 +22,5 @@ Route::get('/', function () {
 
 Route::get('googlesheet', [GoogleSheetsController::class, 'sheetOperation']);
 Route::get('todaystat', [GoogleSheetsController::class, 'todayStat']);
+Route::get('weeklyerror', [GoogleSheetsController::class, 'weeklyError']);
+Route::get('errorlog', [GoogleSheetsController::class, 'errorLog']);
