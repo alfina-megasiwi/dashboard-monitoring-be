@@ -7,7 +7,8 @@ use Illuminate\Http\Request;
 use App\Services\GoogleSheetsServices;
 use SebastianBergmann\LinesOfCode\Counter;
 
-class GoogleSheetsController extends Controller{
+class GoogleSheetsController extends Controller
+{
 
     public $errorLog = array(
         "Nomor Rek tidak dikenal - Transaksi Valas",
@@ -30,14 +31,28 @@ class GoogleSheetsController extends Controller{
     public function todayStat(Request $request)
     {
         $data = $this->getData();
-        $today_data = $data[count($data) - 1];
+
+        $yesterday = date('d.m.Y', strtotime('-1 days'));
+        $counter = count($data) - 1;
+
+        while ($data[$counter][0] != $yesterday) {
+            $counter--;
+        }
+
+        $today_data = $data[$counter];
+
+        $total_data = $today_data[1];
+        $total_error = ($today_data[4] == '-' || $today_data[4] == '') ? 0 : strtok($today_data[4], " ");
+
 
         $today_data_to_json = array(
-            'totalData' => $today_data[1],
+            'totalData' => $total_data,
             'runtime' => $today_data[2],
             'dataRuntime' => number_format((float)$today_data[1] / $today_data[2], 2, '.', ''),
-            'totalError' => ($today_data[4] == '-' || $today_data[4] == '') ? 0 : strtok($today_data[4], " ")
+            'totalError' => $total_error,
+            'succesRate' => $total_error == 0 ? 100 : number_format((($total_data - $total_error) / $total_data) * 100, 2, '.', '')
         );
+
 
         return json_encode($today_data_to_json);
     }
@@ -58,12 +73,11 @@ class GoogleSheetsController extends Controller{
             $temparr = array();
             $array_error = $error[1];
 
-            foreach ($array_error as $value){
+            foreach ($array_error as $value) {
                 array_unshift($temparr, array(
                     'name' => $value,
-                    'isNew' => $this->isTheSame($value)? false : true
+                    'isNew' => $this->isTheSame($value) ? false : true
                 ));
-
             }
             array_unshift($this_week_error, array(
                 'date' => strtok($data[$counter][0], "."),
@@ -79,24 +93,25 @@ class GoogleSheetsController extends Controller{
 
     public function isTheSame($text)
     {
-        return in_array($text, $this->errorLog)? true : false;
+        return in_array($text, $this->errorLog) ? true : false;
     }
 
     public function errorLog(Request $request)
     {
         return response()->json($this->errorLog);
     }
-    public function weeklyData(Request $request){
+    public function weeklyData(Request $request)
+    {
         $data = $this->getData();
         $last_week_sunday = date('d.m.Y', strtotime('last week sunday'));
         $counter = count($data) - 1;
 
         $this_weekly_data = array();
 
-        while ($data[$counter][0] != $last_week_sunday){
+        while ($data[$counter][0] != $last_week_sunday) {
             $weekly_data = array(
                 'data' => $data[$counter][1],
-                'date' => $data[$counter][0],
+                'date' => str_replace(".", "/", $data[$counter][0]),
                 'time' => $data[$counter][2],
                 'error' => ($data[$counter][4] == '-' || $data[$counter][4] == '') ? 0 : strtok($data[$counter][4], " ")
             );
