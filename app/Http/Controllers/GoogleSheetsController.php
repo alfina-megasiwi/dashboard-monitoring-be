@@ -174,7 +174,7 @@ class GoogleSheetsController extends Controller
 
         for ($i = 0; $i <= count($this_monthly_data) - 1; $i++) {
             if ($i < 7 * $tmp_idx) {
-                array_unshift($tmp_array, $this_monthly_data[$i]);
+                array_unshift($tmp_array, (int)$this_monthly_data[$i]["data"]);
                 if ($i == count($this_monthly_data) - 1) {
                     array_unshift($array_monthly, $tmp_array);
                 }
@@ -182,7 +182,7 @@ class GoogleSheetsController extends Controller
                 $tmp_idx++;
                 array_unshift($array_monthly, $tmp_array);
                 $tmp_array = array();
-                array_unshift($tmp_array, $this_monthly_data[$i]);
+                array_unshift($tmp_array, (int)$this_monthly_data[$i]["data"]);
                 if ($i == count($this_monthly_data) - 1) {
                     array_unshift($array_monthly, $tmp_array);
                 }
