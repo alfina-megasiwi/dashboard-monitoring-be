@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Google\Service\Sheets;
 use Illuminate\Http\Request;
 use App\Services\GoogleSheetsServices;
-use SebastianBergmann\LinesOfCode\Counter;
 
 class GoogleSheetsController extends Controller
 {
@@ -22,13 +20,24 @@ class GoogleSheetsController extends Controller
         return (new GoogleSheetsServices())->readSheet();
     }
 
-    public function sheetOperation(Request $request)
+    public function sheetOperation()
     {
         $data = $this->getData();
         return response()->json($data);
     }
 
-    public function todayStat(Request $request)
+    public function isTheSame($text)
+    {
+        return in_array($text, $this->errorLog) ? true : false;
+    }
+
+    public function errorLog()
+    {
+        return response()->json($this->errorLog);
+    }
+
+
+    public function todayStat()
     {
         $data = $this->getData();
 
@@ -57,50 +66,7 @@ class GoogleSheetsController extends Controller
         return json_encode($today_data_to_json);
     }
 
-    public function weeklyError(Request $request)
-    {
-
-        $data = $this->getData();
-        $last_week_sunday = date('d.m.Y', strtotime('last week sunday'));
-        $counter = count($data) - 1;
-
-        $this_week_error = array();
-
-        while ($data[$counter][0] != $last_week_sunday) {
-            preg_match_all("/\((((?>[^()]+)|(?R))*)\)/", $data[$counter][4], $error);
-
-
-            $temparr = array();
-            $array_error = $error[1];
-
-            foreach ($array_error as $value) {
-                array_unshift($temparr, array(
-                    'name' => $value,
-                    'isNew' => $this->isTheSame($value) ? false : true
-                ));
-            }
-            array_unshift($this_week_error, array(
-                'date' => strtok($data[$counter][0], "."),
-                'errorName' => $temparr,
-                'solvingError' => $data[$counter][5],
-            ));
-
-            $counter--;
-        }
-
-        return json_encode($this_week_error);
-    }
-
-    public function isTheSame($text)
-    {
-        return in_array($text, $this->errorLog) ? true : false;
-    }
-
-    public function errorLog(Request $request)
-    {
-        return response()->json($this->errorLog);
-    }
-    public function weeklyData(Request $request)
+    public function weeklyData()
     {
         $data = $this->getData();
         $last_week_sunday = date('d.m.Y', strtotime('last week sunday'));
@@ -119,5 +85,67 @@ class GoogleSheetsController extends Controller
             $counter--;
         };
         return json_encode($this_weekly_data);
+    }
+
+    function errorDataFormat($data, $counter)
+    {
+        preg_match_all("/\((((?>[^()]+)|(?R))*)\)/", $data[$counter][4], $error);
+
+        $temparr = array();
+        $array_error = $error[1];
+
+        foreach ($array_error as $value) {
+            array_unshift($temparr, array(
+                'name' => $value,
+                'isNew' => $this->isTheSame($value) ? false : true
+            ));
+        }
+        return array(
+            'date' => strtok($data[$counter][0], "."),
+            'errorName' => $temparr,
+            'solvingError' => $data[$counter][5],
+        );
+    }
+
+    public function weeklyError()
+    {
+        $data = $this->getData();
+        $last_week_sunday = date('d.m.Y', strtotime('last week sunday'));
+        $counter = count($data) - 1;
+        $error_data = array();
+
+        while ($data[$counter][0] != $last_week_sunday) {
+            array_unshift($error_data, $this->errorDataFormat($data, $counter));
+            $counter--;
+        }
+        return json_encode($error_data);
+    }
+
+    public function monthlyError()
+    {
+        $data = $this->getData();
+        $last_day_of_previous_month = date('d.m.Y', strtotime('last day of previous month'));
+        $counter = count($data) - 1;
+        $error_data = array();
+
+        while ($data[$counter][0] != $last_day_of_previous_month) {
+            array_unshift($error_data, $this->errorDataFormat($data, $counter));
+            $counter--;
+        }
+        return json_encode($error_data);
+    }
+
+    public function yearlyError()
+    {
+        $data = $this->getData();
+        $year = date("Y");
+        $counter = count($data) - 1;
+        $error_data = array();
+
+        while ($counter > -1 && str_contains($data[$counter][0], $year)) {
+            array_unshift($error_data, $this->errorDataFormat($data, $counter));
+            $counter--;
+        }
+        return json_encode($error_data);
     }
 }
