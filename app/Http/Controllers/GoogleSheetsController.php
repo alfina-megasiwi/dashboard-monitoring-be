@@ -148,4 +148,47 @@ class GoogleSheetsController extends Controller
         }
         return json_encode($error_data);
     }
+
+    public function monthlyData(Request $request)
+    {
+        $data = $this->getData();
+        $last_date_month = date('d.m.Y', strtotime('last day of previous month'));
+        $counter = count($data) - 1;
+
+        $this_monthly_data = array();
+
+        while ($data[$counter][0] != $last_date_month) {
+            $monthly_data = array(
+                'data' => $data[$counter][1],
+                'date' => str_replace(".", "/", $data[$counter][0]),
+                'time' => $data[$counter][2],
+                'error' => ($data[$counter][4] == '-' || $data[$counter][4] == '') ? 0 : strtok($data[$counter][4], " ")
+            );
+            array_unshift($this_monthly_data, $monthly_data);
+            $counter--;
+        };
+
+        $tmp_idx = 1;
+        $array_monthly = array();
+        $tmp_array = array();
+
+        for ($i = 0; $i <= count($this_monthly_data) - 1; $i++) {
+            if ($i < 7 * $tmp_idx) {
+                array_unshift($tmp_array, $this_monthly_data[$i]);
+                if ($i == count($this_monthly_data) - 1) {
+                    array_unshift($array_monthly, $tmp_array);
+                }
+            } else {
+                $tmp_idx++;
+                array_unshift($array_monthly, $tmp_array);
+                $tmp_array = array();
+                array_unshift($tmp_array, $this_monthly_data[$i]);
+                if ($i == count($this_monthly_data) - 1) {
+                    array_unshift($array_monthly, $tmp_array);
+                }
+            }
+        }
+
+        return json_encode($array_monthly);
+    }
 }

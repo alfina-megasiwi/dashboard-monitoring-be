@@ -27,4 +27,4 @@ Route::get('weeklyerror', [GoogleSheetsController::class, 'weeklyError']);
 Route::get('errorlog', [GoogleSheetsController::class, 'errorLog']);
 Route::get('monthlyerror', [GoogleSheetsController::class, 'monthlyError']);
 Route::get('yearlyerror', [GoogleSheetsController::class, 'yearlyError']);
-
+Route::get('monthlydata', [GoogleSheetsController::class, 'monthlyData']);
