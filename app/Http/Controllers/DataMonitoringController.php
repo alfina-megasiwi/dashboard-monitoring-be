@@ -2,41 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use Kreait\Firebase\Factory;
-
 class DataMonitoringController extends Controller
 {
-    // Mengambil seluruh data dari firebase
-    public function index()
-    {
-        $firebase = (new Factory)
-            ->withServiceAccount(__DIR__ . '/dashboard-monitoring-5f004-firebase-adminsdk-h6pxd-b2240004df.json')
-            ->withDatabaseUri('https://dashboard-monitoring-5f004-default-rtdb.firebaseio.com');
+    public $data = [];
 
-        $database = $firebase->createDatabase();
-
-        $data_monitoring = $database
-            ->getReference('DashboardMonitoring');
-
-        return $data_monitoring->getvalue();
+    public function __construct(){
+        $db = new DatabaseFirebase();
+        $this->data = $db->index();
     }
+
 
     // Mengambil data untuk hari ini
     public function todaystat()
     {
-        $data = $this->index();
         $yesterday = date('d-m-Y', strtotime('-1 days'));
-        return json_encode($data[$yesterday]);
+        return json_encode($this->data[$yesterday]);
     }
 
     // Mengambil data berdasarkan range tanggal yang diinginkan
     public function getdata($date1, $date2)
     {
-        $data = $this->index();
         $dates = $this->getBetweenDates($date1,  $date2);
         $data_arr = array();
         for ($x = 0; $x < count($dates); $x++) {
-            array_push($data_arr, $data[$dates[$x]]);
+            array_push($data_arr, $this->data[$dates[$x]]);
         }
 
         return json_encode($data_arr);

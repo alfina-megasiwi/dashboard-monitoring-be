@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DataMonitoringController;
+use App\Http\Controllers\ErrorController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,10 +14,6 @@ use App\Http\Controllers\DataMonitoringController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-Route::get('/', function () {
-    return view('welcome');
-});
 
 Route::get('get-data/{date1}/{date2}', [DataMonitoringController::class, 'getdata'])->name('firebase.getdata');
 Route::get('today-stat', [DataMonitoringController::class, 'todaystat'])->name('firebase.todaystat');
