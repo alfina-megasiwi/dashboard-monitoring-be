@@ -54,14 +54,19 @@ class DataMonitoringController extends Controller
         return $this->getdata($this_week_monday, $today);
     }
 
-    // Mengmabil data mingguan berdasarkan tanggal yang diberikan
+    // Mengambil data mingguan berdasarkan tanggal yang diberikan
     public function weeklydata($date)
     {
-        $date = strtotime($date);
-        $this_week_monday = date('d-m-Y', strtotime('this week monday', $date));
-        $this_week_sunday = date('d-m-Y', strtotime('this week sunday', $date));
-        return $this->getdatagetdata($this_week_monday, $this_week_sunday);
+        $first_day = strtotime('monday this week');
+        $last_day = strtotime('sunday this week');
+
+        if ((strtotime($date) > $first_day) && (strtotime($date) < $last_day)) {
+            return $this->thisweekdata();
+        } else {
+            $date = strtotime($date);
+            $this_week_monday = date('d-m-Y', strtotime('this week monday', $date));
+            $this_week_sunday = date('d-m-Y', strtotime('this week sunday', $date));
+            return $this->getdata($this_week_monday, $this_week_sunday);
+        }
     }
-
-
 }

@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
 class RuntimeController extends Controller
 {
     public $DatabaseFirebase = null;
@@ -32,5 +30,12 @@ class RuntimeController extends Controller
         }
         return json_encode($accumulation_arr);
 
+    }
+
+    public function monthlyruntime($date){
+        $date = strtotime($date);
+        // $first_day_of_the_month = date('d-m-Y', strtotime('first day of this month', $date));
+        // $last_day_of_the_month = date('d-m-Y', strtotime('last day of this month', $date));
+        // return $this->getdatagetdata($this_week_monday, $this_week_sunday);
     }
 }
