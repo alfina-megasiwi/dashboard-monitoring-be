@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DataMonitoringController;
-use App\Http\Controllers\ErrorController;
+use App\Http\Controllers\RuntimeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,4 +20,4 @@ Route::get('today-stat', [DataMonitoringController::class, 'todaystat'])->name('
 Route::get('this-week-data', [DataMonitoringController::class, 'thisweekdata'])->name('firebase.thisweekdata');
 Route::get('weekly-data/{date1}', [DataMonitoringController::class, 'weeklydata'])->name('firebase.weeklydata');
 
-Route::get('this-month-runtime', [DataMonitoringController::class, 'thismonthruntime'])->name('firebase.thismonthruntime');
+Route::get('this-month-runtime', [RuntimeController::class, 'thismonthruntime'])->name('firebase.thismonthruntime');
