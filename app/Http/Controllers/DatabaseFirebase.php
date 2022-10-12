@@ -20,4 +20,6 @@ class DatabaseFirebase extends Controller
 
         return $data_monitoring->getvalue();
     }
+
+
 }

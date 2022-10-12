@@ -16,30 +16,34 @@ class DataMonitoringController extends Controller
     public function todaystat()
     {
         $yesterday = date('d-m-Y', strtotime('-1 days'));
-        return json_encode($this->data[$yesterday]);
+        $today_data = $this->data[$yesterday] ?? [];
+        return json_encode($today_data);
     }
 
     // Mengambil data berdasarkan range tanggal yang diinginkan
     public function getdata($date1, $date2)
     {
         $dates = $this->getBetweenDates($date1,  $date2);
-        $date_arr = array();
-        $data_arr = array();
-        $time_arr = array();
-        $error_arr = array();
+        $date_arr = [];
+        $data_arr = [];
+        $time_arr = [];
+        $error_arr = [];
+        $runtime_arr = [];
 
-        for ($x = 0; $x < count($dates); $x++) {
-            array_push($date_arr, $this->data[$dates[$x]]['DATE']);
-            array_push($data_arr, (int)$this->data[$dates[$x]]['DATA']);
-            array_push($time_arr, (int)$this->data[$dates[$x]]['TIME']);
-            array_push($error_arr, (int)$this->data[$dates[$x]]['ERROR']);
+        for ($item = 0; $item < count($dates); $item++) {
+            array_push($date_arr, $this->data[$dates[$item]]['DATE']);
+            array_push($data_arr, (int)$this->data[$dates[$item]]['DATA']);
+            array_push($time_arr, (int)$this->data[$dates[$item]]['TIME']);
+            array_push($error_arr, (int)$this->data[$dates[$item]]['ERROR']);
+            array_push($runtime_arr, $this->data[$dates[$item]]['RUNTIME']);
         }
 
         return json_encode(array(
             'data' => $data_arr,
             'date' => $date_arr,
             'time' => $time_arr,
-            'error' => $error_arr
+            'error' => $error_arr,
+            'runtime' => $runtime_arr
         ));
     }
 
@@ -57,7 +61,26 @@ class DataMonitoringController extends Controller
         $date = strtotime($date);
         $this_week_monday = date('d-m-Y', strtotime('this week monday', $date));
         $this_week_sunday = date('d-m-Y', strtotime('this week sunday', $date));
-        return $this->getdata($this_week_monday, $this_week_sunday);
+        return $this->getdatagetdata($this_week_monday, $this_week_sunday);
+    }
+
+    public function thismonthruntime()
+    {
+        $this_month_first_day = date('d-m-Y', strtotime('first day of this month'));
+        $today = date('d-m-Y', strtotime('today -1 day'));
+        $dates = $this->getBetweenDates($this_month_first_day, $today);
+        $dates_chunk = array_chunk($dates, 7);
+
+        $accumulation_arr = [];
+        for ($item_arr = 0; $item_arr < count($dates_chunk); $item_arr++) {
+            $temp_arr = [];
+            for ($item = 0; $item < count($dates_chunk[$item_arr]); $item++) {
+                array_push($temp_arr, $this->data[$dates_chunk[$item_arr][$item]]['RUNTIME']);
+            }
+            array_push($accumulation_arr, $temp_arr);
+        }
+        return json_encode($accumulation_arr);
+
     }
 
     // Fungsi yang digunakan untuk me-list seluruh tanggal pada tanggal yang diberikan
