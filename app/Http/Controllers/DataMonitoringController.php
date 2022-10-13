@@ -27,14 +27,13 @@ class DataMonitoringController extends Controller
         $data_arr = [];
         $time_arr = [];
         $error_arr = [];
-        $runtime_arr = [];
+
 
         for ($item = 0; $item < count($dates); $item++) {
-            array_push($date_arr, $this->DatabaseFirebase->data[$dates[$item]]['DATE']);
-            array_push($data_arr, (int)$this->DatabaseFirebase->data[$dates[$item]]['DATA']);
-            array_push($time_arr, (int)$this->DatabaseFirebase->data[$dates[$item]]['TIME']);
-            array_push($error_arr, (int)$this->DatabaseFirebase->data[$dates[$item]]['ERROR']);
-            array_push($runtime_arr, $this->DatabaseFirebase->data[$dates[$item]]['RUNTIME']);
+            array_push($date_arr, $this->DatabaseFirebase->data[$dates[$item]]['DATE'] ?? 0);
+            array_push($data_arr, $this->DatabaseFirebase->data[$dates[$item]]['DATA'] ?? 0);
+            array_push($time_arr, $this->DatabaseFirebase->data[$dates[$item]]['TIME'] ?? 0);
+            array_push($error_arr, $this->DatabaseFirebase->data[$dates[$item]]['ERROR'] ?? 0);
         }
 
         return json_encode(array(
@@ -42,7 +41,6 @@ class DataMonitoringController extends Controller
             'date' => $date_arr,
             'time' => $time_arr,
             'error' => $error_arr,
-            'runtime' => $runtime_arr
         ));
     }
 
@@ -59,7 +57,6 @@ class DataMonitoringController extends Controller
     {
         $first_day = strtotime('monday this week');
         $last_day = strtotime('sunday this week');
-
         if ((strtotime($date) > $first_day) && (strtotime($date) < $last_day)) {
             return $this->thisweekdata();
         } else {
