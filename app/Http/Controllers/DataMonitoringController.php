@@ -47,8 +47,8 @@ class DataMonitoringController extends Controller
     // Mengambil data minggu ini
     public function thisweekdata()
     {
-        $this_week_monday = date('d-m-Y', strtotime('this week monday'));
-        $today = date('d-m-Y', strtotime('today -1 day'));
+        $this_week_monday = date('d-m-Y', strtotime('last week monday'));
+        $today = date('d-m-Y', strtotime('yesterday'));
         return $this->getdata($this_week_monday, $today);
     }
 

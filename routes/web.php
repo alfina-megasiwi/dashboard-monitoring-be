@@ -30,6 +30,7 @@ Route::get('this-year-runtime', [RuntimeController::class, 'thisyearruntime'])->
 Route::get('annualruntime/{date}', [RuntimeController::class, 'annualruntime'])->name('firebase.annualruntime');
 
 Route::get('get-errorlog', [ErrorController::class, 'getErrorLog'])->name('firebase.getErrorLog');
+Route::get('get-week', [ErrorController::class, 'getweek'])->name('firebase.getweek');
 Route::get('this-week-error', [ErrorController::class, 'thisweekerror'])->name('firebase.thisweekerror');
 Route::get('this-month-error', [ErrorController::class, 'thismontherror'])->name('firebase.thismontherror');
 Route::get('monthlyerror/{date}', [ErrorController::class, 'monthlyerror'])->name('firebase.monthlyerror');
