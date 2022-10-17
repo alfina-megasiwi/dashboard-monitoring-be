@@ -7,6 +7,7 @@ use Kreait\Firebase\Factory;
 class DatabaseFirebase extends Controller
 {
     public $data = [];
+    public $errorLog = [];
 
     public function __construct()
     {
@@ -18,7 +19,12 @@ class DatabaseFirebase extends Controller
 
         $data_monitoring = $database
             ->getReference('DashboardMonitoring');
+        $error_log = $database
+            ->getReference('ErrorLog');
+
         $this->data = $data_monitoring->getvalue();
+        $this->errorLog = $error_log->getvalue();
+
     }
 
     // Fungsi yang digunakan untuk me-list seluruh tanggal pada tanggal yang diberikan

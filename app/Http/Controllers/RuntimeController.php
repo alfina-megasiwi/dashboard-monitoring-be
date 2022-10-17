@@ -47,8 +47,8 @@ class RuntimeController extends Controller
 
     public function thisweekruntime()
     {
-        $this_week_monday = date('d-m-Y', strtotime('this week monday'));
-        $today = date('d-m-Y', strtotime('today -1 day'));
+        $this_week_monday = date('d-m-Y', strtotime('last week monday'));
+        $today = date('d-m-Y', strtotime('yesterday'));
         return json_encode($this->getdata($this_week_monday, $today, "week"));
     }
 

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DataMonitoringController;
 use App\Http\Controllers\RuntimeController;
+use App\Http\Controllers\ErrorController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,3 +29,11 @@ Route::get('this-month-runtime', [RuntimeController::class, 'thismonthruntime'])
 Route::get('monthlyruntime/{date}', [RuntimeController::class, 'monthlyruntime'])->name('firebase.monthlyruntime');
 Route::get('this-year-runtime', [RuntimeController::class, 'thisyearruntime'])->name('firebase.thisyearruntime');
 Route::get('annualruntime/{date}', [RuntimeController::class, 'annualruntime'])->name('firebase.annualruntime');
+
+Route::get('get-errorlog', [ErrorController::class, 'getErrorLog'])->name('firebase.getErrorLog');
+Route::get('get-week', [ErrorController::class, 'getweek'])->name('firebase.getweek');
+Route::get('this-week-error', [ErrorController::class, 'thisweekerror'])->name('firebase.thisweekerror');
+Route::get('this-month-error', [ErrorController::class, 'thismontherror'])->name('firebase.thismontherror');
+Route::get('monthlyerror/{date}', [ErrorController::class, 'monthlyerror'])->name('firebase.monthlyerror');
+Route::get('this-year-error', [ErrorController::class, 'thisyearerror'])->name('firebase.thisyearerror');
+Route::get('annualerror/{date}', [ErrorController::class, 'annualerror'])->name('firebase.annualerror');
