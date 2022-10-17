@@ -46,8 +46,16 @@ class RuntimeController extends Controller
 
     public function thisweekruntime()
     {
-        $this_week_monday = date('d-m-Y', strtotime('last week monday'));
-        $today = date('d-m-Y', strtotime('yesterday'));
+        $check_hari = date('d-m-Y', strtotime('today'));
+        $check = date('l', strtotime($check_hari));
+
+        if ($check == "Monday") {
+            $this_week_monday = date('d-m-Y', strtotime('last week monday'));
+            $today = date('d-m-Y', strtotime('today -1 day'));
+        } else {
+            $this_week_monday = date('d-m-Y', strtotime('this week monday'));
+            $today = date('d-m-Y', strtotime('today -1 day'));
+        }
         return json_encode($this->getdata($this_week_monday, $today, "week"));
     }
 

@@ -18,15 +18,60 @@ class ErrorController extends Controller
 
     public function getweek()
     {
-        $this_week_monday = date('d-m-Y', strtotime('last week monday'));
-        $today = date('d-m-Y', strtotime('yesterday'));
-        return json_encode($this->DatabaseFirebase->getBetweenDates($this_week_monday, $today));
+        $this_week_first_day = date('d-m-Y', strtotime('this week monday'));
+        $today = date('d-m-Y', strtotime('today -1 day'));
+
+        $dates = $this->DatabaseFirebase->getBetweenDates($this_week_first_day, $today);
+        $arr_temp = [];
+        for ($idx = 0; $idx < count($dates); $idx++) {
+            array_push($arr_temp, substr($dates[$idx], 0, 2));
+        }
+        return json_encode($arr_temp);
+    }
+
+    public function getmonth()
+    {
+        $this_month_first_day = date('d-m-Y', strtotime('first day of this month'));
+        $today = date('d-m-Y', strtotime('today -1 day'));
+        $dates = $this->DatabaseFirebase->getBetweenDates($this_month_first_day, $today);
+        $dates_chunk = array_chunk($dates, 7);
+        $arr_temp = [];
+        for ($idx = 0; $idx < count($dates_chunk); $idx++) {
+            array_push($arr_temp, "W" . $idx + 1);
+        }
+        return json_encode($arr_temp);
+    }
+
+    public function getyear()
+    {
+        $array = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+        $this_year_first_day = date('d-m-Y', strtotime('first day of january this year'));
+        $today = date('d-m-Y', strtotime('today -1 day'));
+        $dates = $this->DatabaseFirebase->getBetweenDates($this_year_first_day, $today);
+        $years = array();
+        $months = array();
+        foreach ($dates as $d) {
+            list($day, $month, $year) = explode("-", $d);
+            $years[$year][] = $d;
+            $months[$year . "-" . $month][] = $d;
+        }
+        $dates_chunk = array_values($months);
+        return json_encode(array_slice($array, 0, count($dates_chunk)));
     }
 
     public function thisweekerror()
     {
-        $this_week_monday = date('d-m-Y', strtotime('last week monday'));
-        $today = date('d-m-Y', strtotime('yesterday'));
+        $check_hari = date('d-m-Y', strtotime('today'));
+        $check = date('l', strtotime($check_hari));
+
+        if ($check == "Monday") {
+            $this_week_monday = date('d-m-Y', strtotime('last week monday'));
+            $today = date('d-m-Y', strtotime('today -1 day'));
+        } else {
+            $this_week_monday = date('d-m-Y', strtotime('this week monday'));
+            $today = date('d-m-Y', strtotime('today -1 day'));
+        }
+
         $dates = $this->DatabaseFirebase->getBetweenDates($this_week_monday, $today);
 
         $data = $this->DatabaseFirebase->errorLog;
@@ -34,13 +79,14 @@ class ErrorController extends Controller
         $array_keys = array_keys($data);
         $arr = [];
         for ($key = 0; $key < count($array_keys); $key++) {
-            $arr[$array_keys[$key]] = array_fill(0, count($dates), []);
+            $arr[$array_keys[$key]] = array_fill(0, count($dates) + 1, []);
         }
         for ($key = 0; $key < count($array_keys); $key++) {
             $date_error_occur = array_keys(($data[$array_keys[$key]])["DATE"]);
             for ($error = 0; $error < count($date_error_occur); $error++) {
                 if (in_array($date_error_occur[$error], $dates)) {
-                    $arr[$array_keys[$key]][array_search($date_error_occur[$error], $dates)] = ["✔", (((($data[$array_keys[$key]])["DATE"])[$date_error_occur[$error]])["SOLVE"])];
+                    $arr[$array_keys[$key]][array_search($date_error_occur[$error], $dates)] = "✔";
+                    array_push($arr[$array_keys[$key]][count($dates)], [$date_error_occur[$error], (((($data[$array_keys[$key]])["DATE"])[$date_error_occur[$error]])["SOLVE"]), (((($data[$array_keys[$key]])["DATE"])[$date_error_occur[$error]])["SUM"])]);
                 }
             }
         }
@@ -70,7 +116,7 @@ class ErrorController extends Controller
         $arr = [];
 
         for ($key = 0; $key < count($array_keys); $key++) {
-            $arr[$array_keys[$key]] = array_fill(0, count($dates_chunk), []);
+            $arr[$array_keys[$key]] = array_fill(0, count($dates_chunk) + 1, []);
         }
 
         for ($key = 0; $key < count($array_keys); $key++) {
@@ -78,7 +124,8 @@ class ErrorController extends Controller
             for ($error = 0; $error < count($date_error_occur); $error++) {
                 for ($chunk = 0; $chunk < count($dates_chunk); $chunk++) {
                     if (in_array($date_error_occur[$error], $dates_chunk[$chunk])) {
-                        array_push($arr[$array_keys[$key]][$chunk], [$date_error_occur[$error], (((($data[$array_keys[$key]])["DATE"])[$date_error_occur[$error]])["SOLVE"])]);
+                        $arr[$array_keys[$key]][$chunk] = "✔";
+                        array_push($arr[$array_keys[$key]][count($dates_chunk)], [$date_error_occur[$error], (((($data[$array_keys[$key]])["DATE"])[$date_error_occur[$error]])["SOLVE"]), (((($data[$array_keys[$key]])["DATE"])[$date_error_occur[$error]])["SUM"])]);
                     }
                 }
             }
