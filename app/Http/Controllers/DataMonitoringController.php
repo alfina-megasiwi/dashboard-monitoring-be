@@ -69,6 +69,7 @@ class DataMonitoringController extends Controller
         }
     }
 
+    //////////////////////////////////////////////////////////////
     public function getdata2($date1, $date2, $type){
         $dates =  $this->DatabaseFirebase->getBetweenDates($date1, $date2);
         $dates_chunk = [];
@@ -135,6 +136,27 @@ class DataMonitoringController extends Controller
             $this_month_first_day = date('d-m-Y', strtotime('first day of this month', $date));
             $this_month_last_day = date('d-m-Y', strtotime('last day of this month', $date));
             return json_encode($this->getdata2($this_month_first_day, $this_month_last_day, "month"));
+        }
+    }
+///////////////////////////////////////////////////////////////////////////////
+    public function thisyeardata()
+    {
+        $this_year_first_day = date('d-m-Y', strtotime('first day of january this year'));
+        $today = date('d-m-Y', strtotime('today -1 day'));
+        return json_encode($this->getdata2($this_year_first_day, $today, "year"));
+    }
+
+    public function annualdata($date)
+    {
+        $first_day = strtotime('first day of january this year');
+        $last_day = strtotime('last day of december this year');
+        if ((strtotime($date) > $first_day) && (strtotime($date) < $last_day)) {
+            return $this->thisyeardata();
+        } else {
+            $date = strtotime($date);
+            $this_year_first_day = date('d-m-Y', strtotime('first day of january this year', $date));
+            $this_year_last_day = date('d-m-Y', strtotime('last day of december this year', $date));
+            return json_encode($this->getdata2($this_year_first_day, $this_year_last_day, "year"));
         }
     }
 }

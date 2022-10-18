@@ -22,6 +22,7 @@ Route::get('today-stat', [DataMonitoringController::class, 'todaystat'])->name('
 Route::get('this-week-data', [DataMonitoringController::class, 'thisweekdata'])->name('firebase.thisweekdata');
 Route::get('weekly-data/{date}', [DataMonitoringController::class, 'weeklydata'])->name('firebase.weeklydata');
 Route::get('this-month-data', [DataMonitoringController::class, 'thismonthdata'])->name('firebase.thismonthdata');
+Route::get('this-year-data', [DataMonitoringController::class, 'thisyeardata'])->name('firebase.thisyeardata');
 
 Route::get('this-week-runtime', [RuntimeController::class, 'thisweekruntime'])->name('firebase.thisweekruntime');
 Route::get('weeklyruntime/{date}', [RuntimeController::class, 'weeklyruntime'])->name('firebase.weeklyruntime');
