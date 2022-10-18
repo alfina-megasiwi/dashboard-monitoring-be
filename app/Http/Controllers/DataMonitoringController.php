@@ -51,11 +51,10 @@ class DataMonitoringController extends Controller
     {
         $check_hari = date('d-m-Y', strtotime('today'));
         $check = date('l', strtotime($check_hari));
-
-        if($check == "Monday"){
+        if ($check == "Monday") {
             $this_week_monday = date('d-m-Y', strtotime('last week monday'));
             $today = date('d-m-Y', strtotime('today -1 day'));
-        }else{
+        } else {
             $this_week_monday = date('d-m-Y', strtotime('this week monday'));
             $today = date('d-m-Y', strtotime('today -1 day'));
         }
@@ -78,15 +77,16 @@ class DataMonitoringController extends Controller
     }
 
     //////////////////////////////////////////////////////////////
-    public function getdata2($date1, $date2, $type){
+    public function getdata2($date1, $date2, $type)
+    {
         $dates =  $this->DatabaseFirebase->getBetweenDates($date1, $date2);
         $dates_chunk = [];
-        if ($type == "week" || $type == "month"){
+        if ($type == "week" || $type == "month") {
             $dates_chunk = array_chunk($dates, 7);
         } else {
             $year = array();
             $months =  array();
-            foreach ($dates as $d){
+            foreach ($dates as $d) {
                 list($day, $month, $year) = explode("-", $d);
                 $years[$year][] = $d;
                 $months[$year . "-" . $month][] = $d;
@@ -126,10 +126,11 @@ class DataMonitoringController extends Controller
         return  $accumulation_arr;
     }
 
-    public function thismonthdata(){
+    public function thismonthdata()
+    {
         $this_month_first_day = date('d-m-Y', strtotime('first day of this month'));
-        $today = date('d-m-Y', strtotime('today -1 day')); 
-        
+        $today = date('d-m-Y', strtotime('today -1 day'));
+
         return json_encode($this->getdata2($this_month_first_day, $today, "month"));
     }
 
@@ -146,7 +147,7 @@ class DataMonitoringController extends Controller
             return json_encode($this->getdata2($this_month_first_day, $this_month_last_day, "month"));
         }
     }
-///////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////
     public function thisyeardata()
     {
         $this_year_first_day = date('d-m-Y', strtotime('first day of january this year'));

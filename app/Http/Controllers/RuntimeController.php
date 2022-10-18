@@ -49,7 +49,6 @@ class RuntimeController extends Controller
     {
         $check_hari = date('d-m-Y', strtotime('today'));
         $check = date('l', strtotime($check_hari));
-
         if ($check == "Monday") {
             $this_week_monday = date('d-m-Y', strtotime('last week monday'));
             $today = date('d-m-Y', strtotime('today -1 day'));
