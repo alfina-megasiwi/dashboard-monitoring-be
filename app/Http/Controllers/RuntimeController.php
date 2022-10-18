@@ -14,6 +14,7 @@ class RuntimeController extends Controller
     public function getdata($date1, $date2, $type)
     {
         $dates = $this->DatabaseFirebase->getBetweenDates($date1, $date2);
+        
         $dates_chunk = [];
         if ($type == "week" || $type == "month") {
             $dates_chunk = array_chunk($dates, 7);
