@@ -11,10 +11,16 @@ class RuntimeController extends Controller
         $this->DatabaseFirebase = new DatabaseFirebase();
     }
 
+    public function getthreshold()
+    {
+        $threshold = $this->DatabaseFirebase->runtime;
+        echo json_encode($threshold["RUNTIME"]["RUNTIME"]);
+    }
+
     public function getdata($date1, $date2, $type)
     {
         $dates = $this->DatabaseFirebase->getBetweenDates($date1, $date2);
-        
+
         $dates_chunk = [];
         if ($type == "week" || $type == "month") {
             $dates_chunk = array_chunk($dates, 7);
@@ -49,6 +55,7 @@ class RuntimeController extends Controller
     {
         $check_hari = date('d-m-Y', strtotime('today'));
         $check = date('l', strtotime($check_hari));
+
         if ($check == "Monday") {
             $this_week_monday = date('d-m-Y', strtotime('last week monday'));
             $today = date('d-m-Y', strtotime('today -1 day'));

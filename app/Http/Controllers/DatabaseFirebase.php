@@ -8,6 +8,7 @@ class DatabaseFirebase extends Controller
 {
     public $data = [];
     public $errorLog = [];
+    public $runtime = [];
 
     public function __construct()
     {
@@ -21,10 +22,11 @@ class DatabaseFirebase extends Controller
             ->getReference('DashboardMonitoring');
         $error_log = $database
             ->getReference('ErrorLog');
-
+        $record_s = $database
+            ->getReference('Runtime');
         $this->data = $data_monitoring->getvalue();
         $this->errorLog = $error_log->getvalue();
-
+        $this->runtime = $record_s->getvalue();
     }
 
     // Fungsi yang digunakan untuk me-list seluruh tanggal pada tanggal yang diberikan
