@@ -80,7 +80,7 @@ class ErrorController extends Controller
             $today = date('d-m-Y', strtotime('today -1 day'));
         }
 
-        $dates = $this->DatabaseFirebase->getBetweenDates($this_week_monday, $today);
+        $dates = $this->DatabaseFirebase->getBetweenDates("25-10-2022", "31-10-2022");
 
         $data = $this->DatabaseFirebase->errorLog;
 
@@ -146,7 +146,7 @@ class ErrorController extends Controller
     {
         $this_month_first_day = date('d-m-Y', strtotime('first day of this month'));
         $today = date('d-m-Y', strtotime('today -1 day'));
-        return $this->getdata($this_month_first_day, $today, "month");
+        return $this->getdata("01-10-2022", "31-10-2022", "month");
     }
 
     public function monthlyerror($date)

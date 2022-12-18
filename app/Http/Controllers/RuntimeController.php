@@ -63,7 +63,7 @@ class RuntimeController extends Controller
             $this_week_monday = date('d-m-Y', strtotime('this week monday'));
             $today = date('d-m-Y', strtotime('today -1 day'));
         }
-        return json_encode($this->getdata($this_week_monday, $today, "week"));
+        return json_encode($this->getdata("25-10-2022", "31-10-2022", "week"));
     }
 
     public function weeklyruntime($date)
@@ -85,7 +85,7 @@ class RuntimeController extends Controller
     {
         $this_month_first_day = date('d-m-Y', strtotime('first day of this month'));
         $today = date('d-m-Y', strtotime('today -1 day'));
-        return json_encode($this->getdata($this_month_first_day, $today, "month"));
+        return json_encode($this->getdata("01-10-2022", "31-10-2022", "month"));
     }
 
     public function monthlyruntime($date)

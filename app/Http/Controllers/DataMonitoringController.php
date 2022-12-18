@@ -13,11 +13,17 @@ class DataMonitoringController extends Controller
         $this->DatabaseFirebase = new DatabaseFirebase();
     }
 
+    public function halo()
+    {
+        return json_encode("halo");
+    }
+
+
     // Mengambil data untuk hari ini
     public function todaystat()
     {
         $yesterday = date('d-m-Y', strtotime('-1 days'));
-        $today_data = $this->DatabaseFirebase->data[$yesterday] ?? [];
+        $today_data = $this->DatabaseFirebase->data[$yesterday] ?? $this->DatabaseFirebase->data["31-10-2022"];
         return json_encode($today_data);
     }
 
@@ -59,7 +65,7 @@ class DataMonitoringController extends Controller
             $this_week_monday = date('d-m-Y', strtotime('this week monday'));
             $today = date('d-m-Y', strtotime('today -1 day'));
         }
-        return $this->getdata($this_week_monday, $today);
+        return $this->getdata("25-10-2022", "31-10-2022");
     }
 
     // Mengambil data mingguan berdasarkan tanggal yang diberikan
@@ -132,7 +138,7 @@ class DataMonitoringController extends Controller
         $this_month_first_day = date('d-m-Y', strtotime('first day of this month'));
         $today = date('d-m-Y', strtotime('today -1 day'));
 
-        return json_encode($this->getdata2($this_month_first_day, $today, "month"));
+        return json_encode($this->getdata2("01-10-2022", "31-10-2022", "month"));
     }
 
     public function monthlydata($date)
@@ -153,7 +159,7 @@ class DataMonitoringController extends Controller
     {
         $this_year_first_day = date('d-m-Y', strtotime('first day of january this year'));
         $today = date('d-m-Y', strtotime('today -1 day'));
-        return json_encode($this->getdata2($this_year_first_day, $today, "year"));
+        return json_encode($this->getdata2("01-01-2022", "31-10-2022", "year"));
     }
 
     public function annualdata($date)
